@@ -1,56 +1,24 @@
-import { Controller, Delete, Get, Param, Post, Patch, Put, Body } from '@nestjs/common';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
+import { Controller, Delete, Get, Param, Post, Patch, Put, Body, NotFoundException } from '@nestjs/common';
+import { CreateUserDto, UpdateUserDto } from './user.dto';
+import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
-
-  private users: User[] = [
-    {
-      id: '1',
-      name: 'John Doe',
-      email: 'john.doe@example.com',
-    },
-    {
-      id: '2',
-      name: 'Johna Doa',
-      email: 'johna.doa@example.com',
-    },
-    {
-      id: '3',
-      name: 'Pepa Doa',
-      email: 'pepa.doa@example.com',
-    },
-  ];
+  constructor(private userService: UsersService) {}
 
   @Get()
   getUsers() {
-    return this.users;
+    return this.userService.findAll();
   }
 
   @Get(':id')
   findUser(@Param('id') id: string) {
-    const user = this.users.find((user) => user.id === id);
-    if (!user) {
-      return {
-        error: 'User not found',
-      }
-    }
-    return user;
+    return this.userService.getUserById(id);
   }
 
   @Post()
-  createUser(@Body() body: User) {
-    const newUser = {
-      ...body,
-      id: `${this.users.length + 1}`,
-    };
-    this.users.push(newUser);
-    return newUser;
+  createUser(@Body() body: CreateUserDto) {
+    return this.userService.create(body);
   }
 
   // Solo algunos campos
@@ -58,29 +26,12 @@ export class UsersController {
 
   // Todos los campos
   @Put(':id')
-  updateUser(@Param('id') id: string, @Body() changes: User) {
-    const position = this.users.findIndex((user) => user.id === id);
-    if (position === -1 ) {
-      return {
-        error: 'User not found',
-      };
-    };
-
-    const currentUser = this.users[position];
-    const updatedUser = {
-      ...currentUser,
-      ...changes,
-    };
-    this.users[position] = updatedUser;
-    return updatedUser;
+  updateUser(@Param('id') id: string, @Body() changes: UpdateUserDto) {
+    return this.userService.update(id, changes);
   }
 
   @Delete(':id')
   deleteUser(@Param('id') id: string) {
-    this.users = this.users.filter((user) => user.id !== id);
-    return {
-      message: 'User deleted',
-    }
+    return this.userService.delete(id);
   }
-
 }
