@@ -1,5 +1,5 @@
-import { Controller, Delete, Get, Param, Post, Patch, Put, Body, NotFoundException } from '@nestjs/common';
-import { CreateUserDto, UpdateUserDto } from './user.dto';
+import { Controller, Delete, Get, Param, Post, Patch, Put, Body, NotFoundException, ParseIntPipe } from '@nestjs/common';
+import { CreateUserDto, UpdateUserDto } from './dtos/user.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -12,7 +12,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  findUser(@Param('id') id: string) {
+  findUser(@Param('id', ParseIntPipe) id: number) {
     return this.userService.getUserById(id);
   }
 
@@ -24,14 +24,14 @@ export class UsersController {
   // Solo algunos campos
   // @Patch(':id')
 
-  // Todos los campos
+  // // Todos los campos
   @Put(':id')
-  updateUser(@Param('id') id: string, @Body() changes: UpdateUserDto) {
+  updateUser(@Param('id', ParseIntPipe) id: number, @Body() changes: UpdateUserDto) {
     return this.userService.update(id, changes);
   }
 
   @Delete(':id')
-  deleteUser(@Param('id') id: string) {
+  deleteUser(@Param('id', ParseIntPipe) id: number) {
     return this.userService.delete(id);
   }
 }

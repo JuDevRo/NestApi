@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Profile } from './profile.entity';
 
 @Entity({
   name: 'users',
@@ -26,4 +27,9 @@ export class User {
     name: 'updated_at',
   })
   updatedAt: Date;
+
+  // Eager hace que venga la tabla al llamar solo users
+  @OneToOne(() => Profile, { nullable: false, cascade: true, eager: true })
+  @JoinColumn({ name: 'profile_id' })
+  profile: Profile;
 }
